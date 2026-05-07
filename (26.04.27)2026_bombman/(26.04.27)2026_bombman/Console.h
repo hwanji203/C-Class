@@ -52,3 +52,5 @@ bool GetKeyDown(int vKey);
 void UpdateInput();
 
 void FrameSync(int fps);
+
+int GetCursorX();

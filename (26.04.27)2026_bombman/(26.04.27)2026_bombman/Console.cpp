@@ -300,3 +300,10 @@ void FrameSync(int fps)
 
     prevTick = GetTickCount64();
 }
+
+int GetCursorX()
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    return csbi.dwCursorPosition.X;
+}

@@ -1,7 +1,7 @@
 #pragma once
 enum class Scene
 {
-	TITLE, INGAME, GAMEOVER
+	TITLE, INFO, INGAME, GAMEOVER
 };
 enum class Menu
 {
