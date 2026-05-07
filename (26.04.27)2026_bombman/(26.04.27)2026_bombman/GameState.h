@@ -1,8 +1,12 @@
 #pragma once
 #include "Enums.h"
+#define NOMINMAX
+#include<Windows.h>
 
 constexpr int MAP_W = 21;
 constexpr int MAP_H = 20;
+constexpr int WIDTH = 160;
+constexpr int HEIGHT = 45;
 struct Position
 {
 	int x; int y;
@@ -19,7 +23,7 @@ struct Player
 
 struct GameState
 {
-	Scene prevScene = Scene::TITLE;
+	Scene prevScene = Scene::NONE;
 	Scene curScene = Scene::TITLE;
 	Menu curMenu = Menu::START;
 	bool isRunning = true;

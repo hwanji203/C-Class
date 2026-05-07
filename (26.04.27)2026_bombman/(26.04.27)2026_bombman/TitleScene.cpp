@@ -1,8 +1,16 @@
 ﻿#include "TitleScene.h"
 #include "Console.h"
+#include "AsciiArt.h"
+static AsciiObjs objs;
+void InitTitle()
+{
+    InitAscii(objs);
+}
 
 void UpdateTitle(GameState& state)
 {
+    UpdateAscii(objs);
+
     if(GetKeyDown(VK_UP))
     {
         state.curMenu = (Menu)std::max(0, (int)state.curMenu - 1);
@@ -17,9 +25,11 @@ void UpdateTitle(GameState& state)
         switch(state.curMenu)
         {
             case Menu::START:
+                PlayTransition();
                 state.curScene = Scene::INGAME;
                 break;
             case Menu::INFO:
+                state.curScene = Scene::INFO;
                 break;
             case Menu::QUIT:
                 state.isRunning = false;
@@ -30,6 +40,8 @@ void UpdateTitle(GameState& state)
 
 void RenderTitle(const GameState& state)
 {
+    RenderAscii(objs);
+
     COORD res = GetConsoleResolution();
     int x = res.X / 2 - 4;
     int y = res.Y / 3 * 2;
@@ -108,4 +120,48 @@ void RenderInfo(const GameState& state)
         cout << infoLabel[i];
 
     }
+}
+
+void PlayTransition()
+{
+    COORD res = GetConsoleResolution();
+    int delayMs = 30;
+    int falshCount = 6;
+    FlashAnim(res, falshCount, delayMs);
+    CrossAnim(res, delayMs);
+}
+
+void FlashAnim(COORD res, int count, int delayMs)
+{
+    system("cls");
+    for(int i = 0; i < count; ++i)
+    {
+        SetColor(Color::BLACK, Color::WHITE);
+        system("cls");
+        Sleep(delayMs);
+
+        SetColor();
+        system("cls");
+        Sleep(delayMs);
+    }
+}
+
+void CrossAnim(COORD res, int delayMs)
+{
+    SetColor(Color::BLACK, Color::WHITE);
+    for(int x = 0; x < res.X / 2; ++x)
+    {
+        for(int y = 0; y < res.Y; y += 2)
+        {
+            GotoXY(x * 2, y);
+            cout << "  ";
+        }
+        for(int y = 1; y < res.Y; y += 2)
+        {
+            GotoXY(res.X - 2 - x * 2, y);
+            cout << "  ";
+        }
+        Sleep(delayMs);
+    }
+    SetColor();
 }

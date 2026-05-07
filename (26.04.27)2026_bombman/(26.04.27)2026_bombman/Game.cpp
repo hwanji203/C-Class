@@ -6,13 +6,15 @@ void Init(GameState& state)
 {
     srand((unsigned int)time(nullptr));
     //기본 사이즈가 8X12
-    SetConsoleSize(160, 45);
+    SetConsoleSize(WIDTH, HEIGHT);
     SetConsoleWindowStyle(true);
     state = GameState{};
 }
 
 void Update(GameState& state)
 {
+    bool sceneChanged
+        = state.prevScene != state.curScene;
     state.prevScene = state.curScene;
     UpdateInput();
     if(GetKeyDown(VK_ESCAPE))
@@ -20,6 +22,8 @@ void Update(GameState& state)
     switch(state.curScene)
     {
         case Scene::TITLE:
+            if(sceneChanged)
+                InitTitle();
             UpdateTitle(state);
             break;
         case Scene::INFO:
