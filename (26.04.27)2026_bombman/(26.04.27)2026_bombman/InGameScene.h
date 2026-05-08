@@ -9,7 +9,9 @@ void InitInGame(GameState& state);
 void UpdateInGame(GameState& state);
 void MovePlayer(GameState& state);
 Position GetMoveDir();
-bool CanMove();
+bool CanMove(const Block map[][MAP_W], int x, int y);
+void SpawnBomb(GameState& state);
+void UpdateBomb(GameState& state);
 
 // render
 void RenderInGame(const GameState& state);

@@ -1,4 +1,5 @@
 #include "InGameScene.h"
+#include<algorithm>
 
 void LoadMap(GameState& state)
 {
@@ -51,6 +52,76 @@ void InitInGame(GameState& state)
 
 void UpdateInGame(GameState& state)
 {
+    MovePlayer(state);
+
+    if(GetKeyDown(VK_SPACE))
+        SpawnBomb(state);
+    UpdateBomb(state);
+}
+
+void MovePlayer(GameState& state)
+{
+    Player& p = state.player;
+    if(state.curTime - p.lastMoveTime
+       < p.moveInterval)
+        return;
+    Position dir = GetMoveDir();
+    if(dir == Position{ 0, 0 })
+        return;
+
+    Position nextPos = {
+        std::clamp(p.pos.x + dir.x, 0, MAP_W - 1),
+        std::clamp(p.pos.y + dir.y, 0, MAP_H - 1)
+    };
+    if(!CanMove(state.map, nextPos.x, nextPos.y))
+    {
+        return;
+    }
+
+    p.pos = nextPos;
+    p.lastMoveTime = state.curTime;
+}
+
+Position GetMoveDir()
+{
+    Position dir = { 0, 0 };
+    if(GetKey(VK_UP))
+        dir.y = -1;
+    if(GetKey(VK_DOWN))
+        dir.y = 1;
+    if(GetKey(VK_LEFT))
+        dir.x = -1;
+    if(GetKey(VK_RIGHT))
+        dir.x = 1;
+    return dir;
+}
+
+bool CanMove(const Block map[][MAP_W], int x, int y)
+{
+    return map[y][x] == Block::EMPTY;
+}
+
+void SpawnBomb(GameState& state)
+{
+    Player& p = state.player;
+    if(p.bombCount >= p.bombMax)
+        return;
+    if(state.map[p.pos.y][p.pos.x]
+       == Block::BOMB)
+        return;
+    Bomb bomb;
+    bomb.pos = p.pos;
+    bomb.startTime = state.curTime;
+    bomb.power = p.bombPower;
+    bomb.active = true;
+    state.vecBombs.push_back(bomb);
+
+    state.map[p.pos.y][p.pos.x] = Block::BOMB;
+    p.bombCount++;
+}
+
+void UpdateBomb(GameState& state)
+{
 }
 
 void RenderInGame(const GameState& state)
@@ -65,8 +136,7 @@ void DrawMap(const GameState& state)
     {
         for(int x = 0; x < MAP_W; ++x)
         {
-            if(state.player.pos.x == x &&
-               state.player.pos.y == y)
+            if(state.player.pos == Position{x, y})
             {
                 SetColor(Color::LIGHT_YELLOW);
                 cout << "¡×";
