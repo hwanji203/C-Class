@@ -259,6 +259,12 @@ void DrawBar(int x, int y, const string& label, int value, int maxValue, int bar
         << maxValue;
 }
 
+void DrawLine(char ch, int width)
+{
+    cout << std::setfill(ch) << std::setw(width) << ""
+        << std::setfill(' ') << endl;
+}
+
 bool GetKey(int vKey)
 {
     return GetAsyncKeyState(vKey) & 0x8000;

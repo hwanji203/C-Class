@@ -126,6 +126,7 @@
     <ClCompile Include="AsciiArt.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="InGameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TitleScene.cpp" />
   </ItemGroup>
@@ -135,6 +136,7 @@
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="InGameScene.h" />
     <ClInclude Include="TitleScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Console.h"
 #include "TitleScene.h"
+#include "InGameScene.h"
 
 void Init(GameState& state)
 {
@@ -30,6 +31,9 @@ void Update(GameState& state)
             UpdateInfo(state);
             break;
         case Scene::INGAME:
+            if(sceneChanged)
+                InitInGame(state);
+            UpdateInGame(state);
             break;
         case Scene::GAMEOVER:
             break;
@@ -40,7 +44,7 @@ void Render(const GameState& state)
 {
     if(state.prevScene != state.curScene)
         system("cls");
-
+    GotoXY(0, 0);
     switch(state.curScene)
     {
         case Scene::TITLE:
@@ -50,6 +54,7 @@ void Render(const GameState& state)
             RenderInfo(state);
             break;
         case Scene::INGAME:
+            RenderInGame(state);
             break;
         case Scene::GAMEOVER:
             break;

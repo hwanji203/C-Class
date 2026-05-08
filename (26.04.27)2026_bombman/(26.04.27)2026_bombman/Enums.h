@@ -9,5 +9,5 @@ enum class Menu
 };
 enum class Block
 {
-	WALL, EMPTY
+	BRICK, EMPTY, START
 };

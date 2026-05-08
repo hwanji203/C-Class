@@ -46,6 +46,7 @@ void SetColor(Color textColor=Color::WHITE, Color bgColor=Color::BLACK);
 void DrawBar(int x, int y, const string& label,
              int value, int maxValue, int barWidth,
              const string& fillChar = "бс", const string& emptyChar = "бр");
+void DrawLine(char ch, int width);
 
 bool GetKey(int vKey);
 bool GetKeyDown(int vKey);
