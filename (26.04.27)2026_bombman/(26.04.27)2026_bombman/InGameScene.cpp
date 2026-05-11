@@ -122,12 +122,103 @@ void SpawnBomb(GameState& state)
 
 void UpdateBomb(GameState& state)
 {
+    for(Bomb& bomb : state.vecBombs)
+    {
+        if(!bomb.active)
+            continue;
+        if(state.curTime - bomb.startTime 
+           >= BOMB_TIMER_MS)
+            ExplodeBomb(state, bomb);
+    }
+    RemoveDeadBombs(state.vecBombs);
+    for(Flame& flame : state.vecFlames)
+    {
+        if(!flame.active)
+            continue;
+        if(state.curTime - flame.startTime >= FLAME_TIMER_MS)
+            flame.active = false;
+    }
+    RemoveDeadFlames(state.vecFlames);
+}
+
+void ExplodeBomb(GameState& state, Bomb& bomb)
+{
+    state.map[bomb.pos.y][bomb.pos.x] = Block::EMPTY;
+    AddFlame(state, bomb.pos.x, bomb.pos.y);
+    constexpr int DIRS[4][2] = { {0, -1}, {0, 1}, {-1, 0}, {1,0} };
+
+    for(int d = 0; d < 4; ++d)
+    {
+        BlastFlame(state, bomb.pos, DIRS[d][0], DIRS[d][1], bomb.power);
+    }
+    bomb.active = false;
+    state.player.bombCount--;
+}
+
+void BlastFlame(GameState& state, Position pos, int dx, int dy, int power)
+{
+    for(int i = 1; i <= power; ++i)
+    {
+        int nx = pos.x + dx * i;
+        int ny = pos.y + dy * i;
+
+        if(nx < 0 || nx >= MAP_W || ny < 0 || ny >= MAP_H)
+            break;
+
+        Block& b = state.map[ny][nx];
+        switch(b)
+        {
+            case Block::BRICK:
+                b = Block::EMPTY;
+                AddFlame(state, nx, ny);
+                return;
+            case Block::EMPTY:
+                AddFlame(state, nx, ny);
+            //case Block::BOMB:
+            //    break;
+        }
+    }
+}
+
+void RemoveDeadBombs(std::vector<Bomb>& bombs)
+{
+    std::vector<Bomb>::iterator iter = bombs.begin();
+    for( ; iter != bombs.end(); )
+    {
+        if(!iter->active)
+            iter = bombs.erase(iter);
+        else
+            ++iter;
+    }
+}
+
+void AddFlame(GameState& state, int x, int y)
+{
+    Flame flame;
+    flame.pos = { x,y };
+    flame.startTime = state.curTime;
+    flame.active = true;
+    state.vecFlames.push_back(flame);
+}
+
+void RemoveDeadFlames(std::vector<Flame>& flames)
+{
+    std::vector<Flame>::iterator iter = flames.begin();
+    for(; iter != flames.end(); )
+    {
+        if(!iter->active)
+            iter = flames.erase(iter);
+        else
+            ++iter;
+    }
 }
 
 void RenderInGame(const GameState& state)
 {
     DrawMap(state);
     DrawUI(state);
+    GotoXY(0, MAP_H + 2);
+    cout << state.vecBombs.size();
 }
 
 void DrawMap(const GameState& state)
@@ -136,23 +227,13 @@ void DrawMap(const GameState& state)
     {
         for(int x = 0; x < MAP_W; ++x)
         {
-            if(state.player.pos == Position{x, y})
-            {
-                SetColor(Color::LIGHT_YELLOW);
-                cout << "§";
+            if(TryDrawFlame(state, x, y))
                 continue;
-            }
-            switch(state.map[y][x])
-            {
-                case Block::BRICK:
-                    SetColor(Color::GRAY);
-                    cout << "■";
-                    break;
-                case Block::EMPTY:
-                    SetColor();
-                    cout << "  "; // 특수문자라 2칸
-                    break;
-            }
+
+            if(TryDrawPlayer(state, x, y))
+                continue;
+
+            DrawBlock(state, x, y);
         }
         cout << endl;
     }
@@ -196,4 +277,59 @@ void DrawUI(const GameState& state)
     DrawLine('=', UI_W);
 
     SetColor();
+}
+
+void DrawBlock(const GameState& state, int x, int y)
+{
+    switch(state.map[y][x])
+    {
+        case Block::BRICK:
+            SetColor(Color::GRAY);
+            cout << "■";
+            break;
+        case Block::BOMB:
+        {
+            ULONGLONG elasped = 0;
+            for(const Bomb& bom : state.vecBombs)
+            {
+                if(bom.active && bom.pos == Position{ x, y })
+                {
+                    elasped = state.curTime - bom.startTime;
+                    break;
+                }
+            }
+            SetColor(Color::LIGHT_RED);
+            cout << (elasped / BOMB_BLICK_INTERVAL_MS % 2 == 0 ? "◐" : "◑");
+        }
+            break;
+        case Block::EMPTY:
+            SetColor();
+            cout << "  "; // 특수문자라 2칸
+            break;
+    }
+}
+
+bool TryDrawPlayer(const GameState& state, int x, int y)
+{
+    if(state.player.pos == Position{ x, y })
+    {
+        SetColor(Color::LIGHT_YELLOW);
+        cout << "§";
+        return true;
+    }
+    return false;
+}
+
+bool TryDrawFlame(const GameState& state, int x, int y)
+{
+    for(const Flame& flame : state.vecFlames)
+    {
+        if(flame.active && flame.pos == Position{ x,y })
+        {
+            SetColor(Color::LIGHT_VIOLET);
+            cout << "▦";
+            return true;
+        }
+    }
+    return false;
 }

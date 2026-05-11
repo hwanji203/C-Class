@@ -12,8 +12,17 @@ Position GetMoveDir();
 bool CanMove(const Block map[][MAP_W], int x, int y);
 void SpawnBomb(GameState& state);
 void UpdateBomb(GameState& state);
+void ExplodeBomb(GameState& state, Bomb& bomb);
+void BlastFlame(GameState& state, Position pos
+				, int dx, int dy, int power);
+void RemoveDeadBombs(std::vector<Bomb>& bombs);
+void AddFlame(GameState& state, int x, int y);
+void RemoveDeadFlames(std::vector<Flame>& flames);
 
 // render
 void RenderInGame(const GameState& state);
 void DrawMap(const GameState& state);
 void DrawUI(const GameState& state);
+void DrawBlock(const GameState& state, int x, int y);
+bool TryDrawPlayer(const GameState& state, int x, int y);
+bool TryDrawFlame(const GameState& state, int x, int y);
