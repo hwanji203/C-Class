@@ -12,6 +12,9 @@ constexpr int HEIGHT = 45;
 constexpr int BOMB_TIMER_MS = 3000; // 3√  ±‚¥Ÿ∑»¥Ÿ∞°
 constexpr int FLAME_TIMER_MS = 500; // ¿Ã∆Â∆Æ Ω√∞£
 constexpr int BOMB_BLICK_INTERVAL_MS = 200; // ∫Ì∏µ≈© ∞£∞›
+constexpr int DASH_COOLDOWN_MS = 300;
+constexpr int DASH_DISTANCE = 3;
+constexpr int DASH_TRAIL_MS = 150;
 
 struct Position
 {
@@ -30,6 +33,14 @@ struct Flame
     ULONGLONG   startTime = 0;
     bool        active = false;
 };
+
+struct DashTrail
+{
+    Position  pos;
+    ULONGLONG startTime = 0;
+    bool      active = false;
+};
+
 struct Bomb
 {
     Position    pos;
@@ -41,13 +52,14 @@ struct Bomb
 struct Player
 {
     Position    pos = { 0,0 };
-    int         bombMax = 1;
+    int         bombMax = 3;
     int         bombCount = 0; // «ˆ¿Á ∆¯≈∫
     int         bombPower = 1;
     bool        isAlive = true;
     int         moveInterval = 150;
     ULONGLONG   lastMoveTime = 0;
     bool        isTrans = false;
+    ULONGLONG lastDashTime = 0;
 };
 
 struct GameState
@@ -61,4 +73,5 @@ struct GameState
     ULONGLONG           curTime;
     std::vector<Bomb>   vecBombs;
     std::vector<Flame>  vecFlames;
+    std::vector<DashTrail> dashTrails;
 };

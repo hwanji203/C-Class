@@ -128,6 +128,7 @@
     <ClCompile Include="AsciiArt.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Human.cpp" />
     <ClCompile Include="InGameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TitleScene.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="Human.h" />
     <ClInclude Include="InGameScene.h" />
     <ClInclude Include="TitleScene.h" />
   </ItemGroup>

@@ -18,6 +18,8 @@ void BlastFlame(GameState& state, Position pos
 void RemoveDeadBombs(std::vector<Bomb>& bombs);
 void AddFlame(GameState& state, int x, int y);
 void RemoveDeadFlames(std::vector<Flame>& flames);
+void Dash(GameState& state, Position dir);
+void UpdateDashTrails(GameState& state);
 
 // render
 void RenderInGame(const GameState& state);
@@ -26,3 +28,4 @@ void DrawUI(const GameState& state);
 void DrawBlock(const GameState& state, int x, int y);
 bool TryDrawPlayer(const GameState& state, int x, int y);
 bool TryDrawFlame(const GameState& state, int x, int y);
+bool TryDrawTrail(const GameState& state, int x, int y);

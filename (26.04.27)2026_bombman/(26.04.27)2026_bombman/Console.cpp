@@ -313,3 +313,16 @@ int GetCursorX()
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     return csbi.dwCursorPosition.X;
 }
+
+void SetConsoleFont(const wstring& fontName, COORD size, UINT weight)
+{
+    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_FONT_INFOEX info = {};
+    info.cbSize = sizeof(CONSOLE_FONT_INFOEX);
+    info.dwFontSize = size; // 폭, 높이
+    info.FontWeight = weight; // FW_ ~ 
+    // 폰트 이름 복사
+    wcscpy_s(info.FaceName, fontName.c_str());
+    SetCurrentConsoleFontEx(handle, false, &info);
+
+}

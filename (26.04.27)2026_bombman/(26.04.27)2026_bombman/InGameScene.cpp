@@ -1,39 +1,47 @@
 #include "InGameScene.h"
 #include<algorithm>
+#include<fstream>
 
 void LoadMap(GameState& state)
 {
     // 맵 찍어낼 때
     // 1. 내부 초기화
     // 2. 외부 초기화
-    const string gameMap[MAP_H] =
-    {
-        "21111100000000000000",
-        "00000111111110000000",
-        "00111100000000000000",
-        "00000100000000000000",
-        "00000111111111100000",
-        "00000100000000100000",
-        "00000100000000100000",
-        "00000100000000100000",
-        "00000100000000100000",
-        "00000100000000100000",
-        "00000100000000111100",
-        "00000100000000000000",
-        "00000111111111111100",
-        "00000100000000001100",
-        "00000100000000001001",
-        "00000100000000001111",
-        "00000100000000000000",
-        "00000100000000000100",
-        "00000111111111111100",
-        "00000000000000000000",
-    };
+    //const string gameMap[MAP_H] =
+    //{
+    //    "21111100000000000000",
+    //    "00000111111110000000",
+    //    "00111100000000000000",
+    //    "00000100000000000000",
+    //    "00000111111111100000",
+    //    "00000100000000100000",
+    //    "00000100000000100000",
+    //    "00000100000000100000",
+    //    "00000100000000100000",
+    //    "00000100000000100000",
+    //    "00000100000000111100",
+    //    "00000100000000000000",
+    //    "00000111111111111100",
+    //    "00000100000000001100",
+    //    "00000100000000001001",
+    //    "00000100000000001111",
+    //    "00000100000000000000",
+    //    "00000100000000000100",
+    //    "00000111111111111100",
+    //    "00000000000000000000",
+    //};
+    std::ifstream mapFile("file\\map.txt");
+    if(!mapFile.is_open())
+        return;
+
     for(int y = 0; y < MAP_H; ++y)
     {
+        string line;
+        mapFile >> line;
         for(int x = 0; x < MAP_W; ++x)
         {
-            int data = gameMap[y][x] - '0';
+            //int data = gameMap[y][x] - '0';
+            int data = line[x] - '0';
             state.map[y][x] = (Block)data;
             if(state.map[y][x] == Block::START)
             {
@@ -42,6 +50,8 @@ void LoadMap(GameState& state)
             }
         }
     }
+
+    mapFile.close();
 }
 
 void InitInGame(GameState& state)
@@ -57,16 +67,22 @@ void UpdateInGame(GameState& state)
     if(GetKeyDown(VK_SPACE))
         SpawnBomb(state);
     UpdateBomb(state);
+    UpdateDashTrails(state);
 }
 
 void MovePlayer(GameState& state)
 {
     Player& p = state.player;
-    if(state.curTime - p.lastMoveTime
-       < p.moveInterval)
-        return;
     Position dir = GetMoveDir();
     if(dir == Position{ 0, 0 })
+        return;
+    if(GetKeyDown('Z'))
+    {
+        Dash(state, dir);
+        return;
+    }
+
+    if(state.curTime - p.lastMoveTime       < p.moveInterval)
         return;
 
     Position nextPos = {
@@ -174,8 +190,20 @@ void BlastFlame(GameState& state, Position pos, int dx, int dy, int power)
                 return;
             case Block::EMPTY:
                 AddFlame(state, nx, ny);
-            //case Block::BOMB:
-            //    break;
+                break;
+            case Block::BOMB:
+            {
+                for(Bomb& bomb : state.vecBombs)
+                {
+                    if(bomb.active &&
+                       bomb.pos == Position{ nx, ny })
+                    {
+                        bomb.startTime =
+                            state.curTime - BOMB_TIMER_MS;
+                        break;
+                    }
+                }
+            }
         }
     }
 }
@@ -213,6 +241,51 @@ void RemoveDeadFlames(std::vector<Flame>& flames)
     }
 }
 
+void Dash(GameState& state, Position dir)
+{
+    Player& p = state.player;
+
+    if(state.curTime - p.lastDashTime < DASH_COOLDOWN_MS)
+        return;
+
+    for(int i = 0; i < DASH_DISTANCE; ++i)
+    {
+        Position next =
+        {
+            std::clamp(p.pos.x + dir.x, 0, MAP_W - 1),
+            std::clamp(p.pos.y + dir.y, 0, MAP_H - 1)
+        };
+
+        if(!CanMove(state.map, next.x, next.y))
+            break;
+
+        state.dashTrails.push_back({ p.pos, state.curTime, true });
+
+        p.pos = next;
+    }
+    p.lastDashTime = state.curTime;
+}
+
+void UpdateDashTrails(GameState& state)
+{
+    for(DashTrail& t : state.dashTrails)
+    {
+        if(!t.active)
+            continue;
+        if(state.curTime - t.startTime >= DASH_TRAIL_MS)
+            t.active = false;
+    }
+
+    std::vector<DashTrail>::iterator iter = state.dashTrails.begin();
+    for(; iter != state.dashTrails.end();)
+    {
+        if(!iter->active)
+            iter = state.dashTrails.erase(iter);
+        else
+            ++iter;
+    }
+}
+
 void RenderInGame(const GameState& state)
 {
     DrawMap(state);
@@ -227,6 +300,8 @@ void DrawMap(const GameState& state)
     {
         for(int x = 0; x < MAP_W; ++x)
         {
+            if(TryDrawTrail(state, x, y))
+                continue;
             if(TryDrawFlame(state, x, y))
                 continue;
 
@@ -328,6 +403,20 @@ bool TryDrawFlame(const GameState& state, int x, int y)
         {
             SetColor(Color::LIGHT_VIOLET);
             cout << "▦";
+            return true;
+        }
+    }
+    return false;
+}
+
+bool TryDrawTrail(const GameState& state, int x, int y)
+{
+    for(const DashTrail& t : state.dashTrails)
+    {
+        if(t.active && t.pos.x == x && t.pos.y == y)
+        {
+            SetColor(Color::CYAN);
+            cout << "▒ ";
             return true;
         }
     }

@@ -20,6 +20,17 @@ void Update(GameState& state)
     UpdateInput();
     if(GetKeyDown(VK_ESCAPE))
         state.isRunning = false;
+    if(GetKeyDown('1'))
+        SetConsoleFont(L"MS Gothic", { 10,20 });
+    if(GetKeyDown('2'))
+        SetConsoleFont(L"NSimSun", { 10,20 });
+    if(GetKeyDown('3'))
+        SetConsoleFont(L"¸¼Àº °íµñ", { 10,20 }, FW_BOLD);
+    if(GetKeyDown('4'))
+        SetConsoleFont(L"SimSun-ExtB", { 7,14 }, FW_THIN);
+    if(GetKeyDown('5'))
+        SetConsoleFont(L"±¼¸²Ã¼", { 8,16 });
+
     switch(state.curScene)
     {
         case Scene::TITLE:

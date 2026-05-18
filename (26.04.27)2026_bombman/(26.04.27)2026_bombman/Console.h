@@ -55,3 +55,4 @@ void UpdateInput();
 void FrameSync(int fps);
 
 int GetCursorX();
+void SetConsoleFont(const wstring& fontName, COORD size, UINT weight = FW_NORMAL);
