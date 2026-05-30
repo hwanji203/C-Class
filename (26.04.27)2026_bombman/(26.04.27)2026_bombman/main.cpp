@@ -76,13 +76,13 @@ int main()
     // SOLID
 
 
-    //GameState state;
-    //Init(state);
-    //while (state.isRunning)
-    //{
-    //    state.curTime = GetTickCount64();
-    //    Update(state);
-    //    Render(state);
-    //    FrameSync(60);
-    //}
+    GameState state;
+    Init(state);
+    while (state.isRunning)
+    {
+        state.curTime = GetTickCount64();
+        Update(state);
+        Render(state);
+        FrameSync(60);
+    }
 }

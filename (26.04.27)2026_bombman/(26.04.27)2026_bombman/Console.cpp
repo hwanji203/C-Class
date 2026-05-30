@@ -150,8 +150,8 @@ void ShakeConsoleWindow(int intensity, int duration, int interval)
     int count = duration / interval;
     for(int i = 0; i < count; ++i)
     {
-        int offsetX = rand() & (intensity * 2 + 1) - intensity;
-        int offsetY = rand() & (intensity * 2 + 1) - intensity;
+        int offsetX = rand() % (intensity * 2 + 1) - intensity;
+        int offsetY = rand() % (intensity * 2 + 1) - intensity;
 
         SetWindowPos(hWnd, nullptr,
                      originX + offsetX, originY + offsetY, 0, 0, SWP_NOSIZE);

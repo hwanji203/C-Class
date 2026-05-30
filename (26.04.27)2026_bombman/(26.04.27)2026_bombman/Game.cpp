@@ -2,6 +2,7 @@
 #include "Console.h"
 #include "TitleScene.h"
 #include "InGameScene.h"
+#include "SoundManager.h"
 
 void Init(GameState& state)
 {

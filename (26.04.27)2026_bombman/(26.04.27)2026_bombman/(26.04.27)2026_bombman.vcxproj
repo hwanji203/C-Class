@@ -103,10 +103,12 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Fmod\inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)Fmod\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -118,29 +120,42 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Fmod\inc</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)Fmod\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnHyeok.cpp" />
     <ClCompile Include="AsciiArt.cpp" />
+    <ClCompile Include="BaseScene.cpp" />
+    <ClCompile Include="BaseTitleScene.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Human.cpp" />
     <ClCompile Include="InGameScene.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Single.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="클래스.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnHyeok.h" />
     <ClInclude Include="AsciiArt.h" />
+    <ClInclude Include="BaseScene.h" />
+    <ClInclude Include="BaseTitleScene.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="Defines.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Human.h" />
     <ClInclude Include="InGameScene.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="TitleScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
